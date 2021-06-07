@@ -1,37 +1,75 @@
-## Welcome to GitHub Pages
+### lazyMan
 
-You can use the [editor on GitHub](https://github.com/dashixiong-11/atwa.com/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+写出一个函数，能满足以下需求
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+- LazyMan('Hank')
 
-### Markdown
+打印出 你好我是Hank
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+- LazyMan('Hank').sleep(10).eat('lunch')
 
-```markdown
-Syntax highlighted code block
+打印出 你好我是hank （沉默十秒）我刚睡了十秒 我在吃午餐
 
-# Header 1
-## Header 2
-### Header 3
+- LazyMan('Hank').eat('lunch').eat('supper')
 
-- Bulleted
-- List
+打印出 你好我是hank 吃午餐 吃晚餐
 
-1. Numbered
-2. List
+- LazyMan('Hank').sleepFirst('5').eat('supper')
 
-**Bold** and _Italic_ and `Code` text
+沉默五秒 打印出，你好我是hank， 吃晚饭
 
-[Link](url) and ![Image](src)
+首先确定大致框架
+
+```tsx
+LazyMan = () =>{
+	return {
+		sleep:()=>{},
+		eat:()=>{},
+		sleepFirst:()=>{}
+	}
+}
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+队列+回调
 
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/dashixiong-11/atwa.com/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+```tsx
+LazyMan = (name) =>{
+var queue = []
+const task = () => {console.log(`你好我是${name}`) next()}
+queue.push(task)
+const next = ()=>{
+	const first = queue.shift()
+	first?.()
+}
+const api = {
+_x:queue
+	sleep:(n)=>{
+	const task = ()=> {
+	setTimeout(()=>{
+		console.log(`我刚睡了${n}秒钟`)
+		next()
+		},n*1000)	
+	}
+queue.push(task)
+return api
+},
+		eat:(type)=>{
+		const task = () => {console.log(`${type ==='lunch'?'吃午饭':'吃晚饭'}`);next()}
+		queue.push(task)
+		return api
+	},
+		sleepFirst:(n)=>{
+				const task = ()=> {
+				setTimeout(()=>{
+					console.log(`我刚睡了${n}秒钟`)
+					next()
+			},n*1000)	
+		}
+		queue.unshift(task)
+		return api
+	}
+}
+	setTimeout(()=>{next()})
+	return api
+}
+```
